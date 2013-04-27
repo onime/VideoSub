@@ -107,13 +107,43 @@
 	
 				// called on AJAX load onComplete (to work around element reference issues)
 				el.update = function(req) { 
-					el.subtitles = new Array();
-					records = req.split('\n\n');
-					for (var r=0;r<records.length;r++) {
+				    el.subtitles = new Array();
+
+				    //if it's a windows file the return line is \r\n
+				    records = req.split('\n');
+
+				    var count_sub = -1;
+				    var r = 0;
+
+				    while(r<records.length)
+				    {
+					record = records[r];
+
+					// if it's another subtitle
+					if(!isNaN(record))
+					{
+					    count_sub++;
+					    el.subtitles[count_sub] = new Array();
+					    el.subtitles[count_sub][0] = record;
+
+					    r++;
+					    record = records[r];
+					    el.subtitles[count_sub][1] = record;
+					    r++;
+					    record = records[r];
+
+					    //a subtitle can be on multiple line
+					    var line = "";
+					    while(record != "\r" && record != "" && r < records.length)
+					    {
+						line += record+"\n";
+						r++;
 						record = records[r];
-						el.subtitles[r] = new Array();
-						el.subtitles[r] = record.split('\n');
+					    }
+					    el.subtitles[count_sub][2] = line;
 					}
+					r++;
+				    }
 				}
 					
 				// load the subtitle file
